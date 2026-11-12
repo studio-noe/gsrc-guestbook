@@ -16,7 +16,9 @@
   if(!svg){svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','sc');
     svg.innerHTML='<path/>';el.prepend(svg);}
   const p=svg.firstChild; p.setAttribute('fill',o.fill); p.setAttribute('stroke',o.stroke); p.setAttribute('stroke-width','1.5');
-  const draw=()=>{const r=el.getBoundingClientRect(); if(!r.width)return; svg.setAttribute('viewBox',`0 0 ${r.width} ${r.height}`); p.setAttribute('d',path(r.width,r.height,o.b));};
+  // layout box, not getBoundingClientRect: the caller may be rotated (wall notes) or mid scale animation (spotlight),
+  // and the visual rect would bake a wrong viewBox that ResizeObserver never corrects.
+  const draw=()=>{const w=el.offsetWidth,h=el.offsetHeight; if(!w)return; svg.setAttribute('viewBox',`0 0 ${w} ${h}`); p.setAttribute('d',path(w,h,o.b));};
   draw(); if(window.ResizeObserver){ if(el._ro)el._ro.disconnect(); el._ro=new ResizeObserver(draw); el._ro.observe(el);} return draw;
  };
 })();

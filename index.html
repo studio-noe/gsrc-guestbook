@@ -24,14 +24,14 @@ input{width:100%;background:transparent;border:0;border-bottom:1px solid var(--l
 input::placeholder{color:#b2b2aa}
 input:focus{border-color:var(--ink)}
 .sr{display:flex;align-items:center;gap:12px;margin:14px 0 12px;flex:none}
-.sr b{font-size:12px;font-weight:500;margin-right:2px}
+.sr b{font-size:12px;font-weight:500;margin-right:2px;white-space:nowrap}
 .swatches{display:flex;gap:14px}
 .sw{width:32px;height:32px;border-radius:50%;cursor:pointer;box-shadow:0 0 0 1px var(--ink) inset;position:relative}
 .sw.sel::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--ink)}
-.fonts{display:flex;align-items:center;gap:7px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.fonts{display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .fonts::-webkit-scrollbar{display:none}
 /* chips are a fixed height but render their own face at its true size, so the sample is honest */
-.ft{flex:none;display:flex;align-items:center;height:34px;padding:0 13px;border:1px solid var(--line);
+.ft{flex:none;display:flex;align-items:center;height:34px;padding:0 10px;border:1px solid var(--line);
     border-radius:99px;cursor:pointer;color:var(--ink);white-space:nowrap;
     font-family:var(--face,var(--serif));font-size:calc(15px*var(--fsc,1))}
 .ft.sel{border-color:var(--ink);background:var(--ink);color:#fff}

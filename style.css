@@ -19,7 +19,7 @@ html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-
 .note .msg{font-family:var(--face,var(--serif));font-weight:400;font-size:calc(1.05em*var(--fsc,1));line-height:var(--flh,1.5);letter-spacing:-.03em;word-break:keep-all;overflow-wrap:anywhere;white-space:pre-wrap}
 /* 눈누 글씨체 5종. --fsc 와 --flh 는 서체마다 다른 체감 크기를 맞추는 보정값 */
 .f-serif  {--face:var(--serif);--fsc:1;--flh:1.5}
-.f-pen    {--face:'Gaegu',var(--serif);--fsc:1.1;--flh:1.42}
+.f-pen    {--face:'Gaegu',var(--serif);--fsc:1.18;--flh:1.42}
 .f-brush  {--face:'Yeon Sung',var(--serif);--fsc:1.25;--flh:1.38}
 .f-dohyeon{--face:'Do Hyeon',var(--sans);--fsc:1.02;--flh:1.45}
 .f-jua    {--face:'Jua',var(--sans);--fsc:1.05;--flh:1.45}

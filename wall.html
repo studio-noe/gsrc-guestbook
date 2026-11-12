@@ -85,9 +85,9 @@ function noteHTML(p,extra=''){return `<div class="note c-${p.color}" ${extra}><d
 function el(p){const d=document.createElement('div');d.innerHTML=noteHTML(p,`data-id="${p.id}" style="--r:${rot(p.id)}"`);const n=d.firstChild;cloudNote(n,{b:Math.max(7,Math.round(innerHeight*.0095))});return n}
 
 const LAYOUTS={flow:'1 flow',grid:'2 grid',bento:'3 bento',feat:'4 feature'};
-let layout='flow';
-try{layout=new URLSearchParams(location.search).get('layout')||localStorage.getItem('gb_layout')||'flow'}catch(e){}
-if(!LAYOUTS[layout]) layout='flow';
+let layout='grid';
+try{layout=new URLSearchParams(location.search).get('layout')||localStorage.getItem('gb_layout')||'grid'}catch(e){}
+if(!LAYOUTS[layout]) layout='grid';
 const hash=id=>{let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)};
 const span=id=>{const h=hash(id)%100;return h<12?[2,2]:h<24?[2,1]:h<34?[1,2]:[1,1]};
 function render(){

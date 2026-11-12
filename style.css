@@ -1,0 +1,21 @@
+/* light theme: white / ink / yellow. traits borrowed from reference: tight tracking, light serif statements,
+   hairline rules, scalloped (cloud) frame, lowercase nav, oversized cropped wordmark */
+:root{--y:#FFD600;--bg:#ffffff;--ink:#0f0f02;--ink2:#3a3a34;--line:#cfcfc6;--g:#77776f;
+ --serif:'Noto Serif KR','Nanum Myeongjo',serif;--sans:'Inter','Noto Sans KR',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-text-size-adjust:100%;letter-spacing:-.02em}
+.serif{font-family:var(--serif);font-weight:300;letter-spacing:-.04em;line-height:1.28}
+.logo-slot{width:44px;height:44px;border:1px dashed var(--ink);border-radius:50%;opacity:.45;flex:none}
+.rule{height:1px;background:var(--ink);border:0}
+.scallop{position:relative;isolation:isolate}
+.scallop>svg.sc{position:absolute;inset:0;width:100%;height:100%;z-index:-1;overflow:visible;pointer-events:none}
+/* post-its: flat, hairline outline, serif message */
+.c-yellow{background:var(--y);color:var(--ink);--ol:var(--ink)}
+.c-black{background:var(--ink);color:var(--y);--ol:var(--ink)}
+.c-white{background:#fff;color:var(--ink);--ol:var(--ink)}
+.c-gray{background:#e9e8e0;color:var(--ink);--ol:var(--ink)}
+.note{border-radius:6px;padding:16px 16px 14px;position:relative;box-shadow:inset 0 0 0 1px var(--ol)}
+.note .kw{display:inline-block;font-size:.7em;font-weight:500;border:1px solid currentColor;border-radius:99px;padding:1px 10px;margin-bottom:10px;letter-spacing:0}
+.note .msg{font-family:var(--serif);font-weight:400;font-size:1.05em;line-height:1.5;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:anywhere;white-space:pre-wrap}
+.note .by{margin-top:12px;font-size:.78em;font-weight:500;opacity:.85}
+.note.cloudy{background:transparent;box-shadow:none;border-radius:0;padding:28px 26px 24px}

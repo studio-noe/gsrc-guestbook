@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>방명록 관리자</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+body{padding:20px;max-width:720px;margin:0 auto}
+h1{font-size:34px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--ink)}h1 span{background:linear-gradient(transparent 62%,var(--y) 62%)}
+input{background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;color:var(--ink);font:inherit;font-size:16px;padding:12px;width:100%}
+button{font:inherit;font-weight:500;border-radius:99px;border:1px solid var(--ink);background:none;color:var(--ink);padding:9px 14px;cursor:pointer}
+button.fill{background:var(--y);color:var(--ink)}
+button.del{border-color:#d6382a;color:#d6382a}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px 0;padding:14px 0;border-bottom:1px solid var(--line)}
+.bar .st{flex:1;min-width:140px;font-weight:700}
+.row{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)}
+.row.h{opacity:.45}
+.row .b{flex:1;min-width:0}
+.row .m{font-family:var(--serif);font-size:17px;line-height:1.5;letter-spacing:-.03em;white-space:pre-wrap;overflow-wrap:anywhere}
+.row .i{font-size:12px;color:var(--g);margin-top:4px}
+.row .a{display:flex;flex-direction:column;gap:6px}
+.dot{width:14px;height:14px;border-radius:50%;margin-top:5px;flex:none;border:1px solid var(--ink)}
+.hidden{display:none!important}
+.err{color:#d6382a;margin-top:8px;font-size:14px}
+</style></head><body>
+<img src="logo-dark.svg" alt="GSRC81" style="height:26px;display:block;margin-bottom:14px"><h1 class="serif">방명록 <span>관리자</span></h1>
+<div id="login"><input id="pw" type="password" placeholder="관리자 비밀번호" autocomplete="off"><div class="err" id="err"></div><button class="fill" style="margin-top:12px;width:100%" id="enter">들어가기</button></div>
+<div id="main" class="hidden">
+  <div class="bar"><div class="st" id="st"></div><button id="lock"></button><button id="csv">CSV 내보내기</button><button id="reload">새로고침</button></div>
+  <div id="list"></div>
+</div>
+<script src="vendor-supabase.js"></script>
+<script src="config.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const sb=supabase.createClient(GB.url,GB.key);
+let pass='',rows=[],locked=false;
+const COL={yellow:'#FFD600',black:'#0f0f02',white:'#ffffff',gray:'#e9e8e0'};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function load(){
+  const {data,error}=await sb.rpc('admin_list',{p_pass:pass});
+  if(error)return false; rows=data;
+  const s=await sb.from('settings').select('locked').eq('id',1).single(); locked=!!(s.data&&s.data.locked);
+  draw(); return true;
+}
+function draw(){
+  $('st').textContent=`전체 ${rows.length}개 / 숨김 ${rows.filter(r=>r.hidden).length}개 / 작성 ${locked?'마감':'열림'}`;
+  $('lock').textContent=locked?'작성 다시 열기':'작성 마감하기';
+  $('list').innerHTML=rows.map(r=>`<div class="row ${r.hidden?'h':''}"><div class="dot" style="background:${COL[r.color]||'#fff'}"></div><div class="b"><div class="m">${esc(r.message)}</div><div class="i">${esc(r.nickname)} / ${new Date(r.created_at).toLocaleString('ko-KR')}</div></div><div class="a"><button data-a="hide" data-id="${r.id}">${r.hidden?'보이기':'숨기기'}</button><button class="del" data-a="del" data-id="${r.id}">삭제</button></div></div>`).join('')||'<p style="color:var(--g);padding:20px 0">아직 글이 없어요</p>';
+}
+$('enter').onclick=async()=>{pass=$('pw').value; if(await load()){$('login').classList.add('hidden');$('main').classList.remove('hidden')}else{$('err').textContent='비밀번호가 맞지 않아요'}};
+$('pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('enter').click()});
+$('reload').onclick=load;
+$('lock').onclick=async()=>{await sb.rpc('admin_set_lock',{p_pass:pass,p_locked:!locked});load()};
+$('list').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const id=b.dataset.id;
+  if(b.dataset.a==='hide'){const r=rows.find(x=>x.id===id);await sb.rpc('admin_set_hidden',{p_pass:pass,p_id:id,p_hidden:!r.hidden})}
+  else if(confirm('삭제하면 복구할 수 없어요. 삭제할까요?')){await sb.rpc('admin_delete',{p_pass:pass,p_id:id})}
+  load()});
+$('csv').onclick=()=>{const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const t=['시각,닉네임,한마디,색,숨김',...rows.map(r=>[r.created_at,r.nickname,r.message,r.color,r.hidden].map(q).join(','))].join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+t],{type:'text/csv'}));a.download='gsrc81_guestbook.csv';a.click()};
+</script></body></html>

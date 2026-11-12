@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GSRC81 방명록 월</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+html,body{height:100%;overflow:hidden}
+body{display:grid;grid-template-rows:auto 1fr}
+.top{display:flex;align-items:center;gap:1.6vw;padding:2.2vh 3vw 2vh;border-bottom:1px solid var(--ink)}
+.top .logo{height:6.4vh;width:auto}
+.top .nm{font-size:4.6vh;font-weight:500;letter-spacing:-.05em;line-height:1}
+.top .sub{color:var(--ink2);font-size:2.1vh;margin-left:1.2vw;letter-spacing:-.01em}
+.top .sp{flex:1}
+.top .mid{font-family:var(--serif);font-weight:300;letter-spacing:-.04em;font-size:3.6vh;text-align:right;line-height:1.25}
+.top .mid b{font-weight:300;background:linear-gradient(transparent 62%,var(--y) 62%)}
+.qr{display:flex;align-items:center;gap:1.4vw;margin-left:2.4vw}
+.cnt{font-size:1.9vh;color:var(--g);text-align:right;margin-top:.6vh}
+#qrbox{background:#fff;padding:.8vh;border-radius:10px;border:1px solid var(--ink);width:11vh;height:11vh}
+#qrbox img,#qrbox canvas{width:100%!important;height:100%!important}
+#wall{position:relative;padding:2.6vh 2.4vw;overflow:hidden;min-height:0}
+#wall .note{font-size:2vh;transform:rotate(calc(var(--r)*var(--rk,1)));animation:pop .6s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes pop{from{opacity:0;transform:scale(.4) rotate(0)}to{opacity:1;transform:rotate(calc(var(--r)*var(--rk,1)))}}
+#wall .note .msg{display:-webkit-box;-webkit-line-clamp:var(--lc,6);-webkit-box-orient:vertical;overflow:hidden}
+/* layout 1: flow (free-fall cards, slight tilt) */
+#wall.L-flow{display:flex;flex-wrap:wrap;align-content:flex-start;gap:2.2vh 1.6vw}
+#wall.L-flow .note{width:19vw}
+/* layout 2: grid (even 5x3) */
+#wall.L-grid,#wall.L-bento,#wall.L-feat{display:grid;gap:2.2vh 1.4vw;--rk:.25}
+#wall.L-grid{grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(3,1fr);--lc:5}
+/* layout 3: bento (mixed spans, dense) */
+#wall.L-bento{grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(4,1fr);grid-auto-rows:0;grid-auto-flow:dense;--lc:4}
+#wall.L-bento .note{font-size:1.8vh}
+#wall.L-bento .note.big{font-size:2.6vh;--lc:9}
+/* layout 4: feature (newest large + 3x3) */
+#wall.L-feat{grid-template-columns:1.55fr 1fr 1fr 1fr;grid-template-rows:repeat(3,1fr);--lc:4}
+#wall.L-feat .note{font-size:1.9vh}
+#wall.L-feat .note.big{font-size:3.6vh;--lc:12}
+#wall.L-grid .note,#wall.L-bento .note,#wall.L-feat .note{width:auto;height:100%;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+#wall.L-grid .note .by,#wall.L-bento .note .by,#wall.L-feat .note .by{margin-top:auto;padding-top:1vh;flex:none}
+#wall.L-grid .note .msg,#wall.L-bento .note .msg,#wall.L-feat .note .msg{flex:1 1 0;min-height:0}
+#wall.L-grid .note .kw,#wall.L-bento .note .kw,#wall.L-feat .note .kw{flex:none}
+#wall.L-grid .note,#wall.L-bento .note,#wall.L-feat .note{padding:3.6vh 2.4vw 3.4vh}
+#wall.L-grid .note .kw,#wall.L-bento .note .kw,#wall.L-feat .note .kw{align-self:flex-start}
+#toast{position:fixed;right:2vw;bottom:2vh;background:var(--ink);color:#fff;font-size:1.8vh;padding:.8vh 1.2vw;border-radius:99px;opacity:0;transition:opacity .3s;z-index:20;pointer-events:none}
+#toast.on{opacity:.9}
+.empty{position:absolute;inset:0;display:grid;place-items:center;color:var(--g);font-family:var(--serif);font-weight:300;letter-spacing:-.04em;font-size:4vh;text-align:center;line-height:1.6}
+.empty b{font-weight:300;background:linear-gradient(transparent 62%,var(--y) 62%)}
+#spot{position:fixed;inset:0;background:rgba(255,255,255,.9);display:none;place-items:center;z-index:10}
+#spot.on{display:grid}
+#spot .cloud{width:50vw;padding:9vh 6vw;text-align:center;animation:big .8s cubic-bezier(.2,1.3,.4,1) both}
+#spot .cloud.out{animation:out .6s ease-in forwards}
+#spot .cloud .kw{font-size:2.2vh;border:1px solid currentColor;border-radius:99px;padding:.3vh 1.2vw;display:inline-block;margin-bottom:2.4vh}
+#spot .cloud .msg{font-family:var(--serif);font-weight:300;font-size:4.6vh;line-height:1.4;letter-spacing:-.04em;word-break:keep-all;overflow-wrap:anywhere;white-space:pre-wrap}
+#spot .cloud .by{margin-top:3vh;font-size:2.4vh;font-weight:500}
+@keyframes big{from{opacity:0;transform:scale(.3) rotate(-8deg)}to{opacity:1;transform:rotate(-1.5deg)}}
+@keyframes out{to{opacity:0;transform:translate(-30vw,-30vh) scale(.2) rotate(-20deg)}}
+#spot .tag{position:absolute;top:5vh;color:var(--ink);font-size:2.6vh;letter-spacing:.3em;font-weight:500}
+</style></head><body>
+<div class="top">
+  <img class="logo" src="logo-dark.svg" alt="GSRC81"><div class="sub" id="date"></div>
+  <div class="sp"></div>
+  <div class="mid">QR 찍고<br><b>한마디 남기기 ↗</b></div>
+  <div class="qr"><div><div id="qrbox"></div><div class="cnt" id="cnt"></div></div></div>
+</div>
+<div id="wall" class="L-flow"></div>
+<div id="toast"></div>
+<div id="spot"><div class="tag">NEW</div><div id="spotnote"></div></div>
+
+<script src="vendor-qrcode.js"></script>
+<script src="vendor-supabase.js"></script>
+<script src="scallop.js"></script>
+<script src="config.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const sb=supabase.createClient(GB.url,GB.key);
+$('date').textContent=GB.title+' / '+GB.date;
+const writeUrl=new URL('./',location.href).href;
+try{new QRCode($('qrbox'),{text:writeUrl,width:256,height:256,correctLevel:QRCode.CorrectLevel.M})}catch(e){}
+
+const known=new Map(); let first=true, queue=[], showing=false;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rot=id=>{let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))|0;return ((Math.abs(h)%60)/10-3).toFixed(1)+'deg'};
+function noteHTML(p,extra=''){return `<div class="note c-${p.color}" ${extra}><div class="msg">${esc(p.message)}</div><div class="by">- ${esc(p.nickname)}</div></div>`}
+function el(p){const d=document.createElement('div');d.innerHTML=noteHTML(p,`data-id="${p.id}" style="--r:${rot(p.id)}"`);const n=d.firstChild;cloudNote(n,{b:Math.max(7,Math.round(innerHeight*.0095))});return n}
+
+const LAYOUTS={flow:'1 flow',grid:'2 grid',bento:'3 bento',feat:'4 feature'};
+let layout='flow';
+try{layout=new URLSearchParams(location.search).get('layout')||localStorage.getItem('gb_layout')||'flow'}catch(e){}
+if(!LAYOUTS[layout]) layout='flow';
+const hash=id=>{let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)};
+const span=id=>{const h=hash(id)%100;return h<12?[2,2]:h<24?[2,1]:h<34?[1,2]:[1,1]};
+function render(){
+  const w=$('wall'); w.className='L-'+layout;
+  const list=[...known.values()].sort((a,b)=>b.created_at.localeCompare(a.created_at));
+  $('cnt').textContent=list.length+'개의 한마디';
+  w.querySelectorAll('[data-id]').forEach(n=>{if(!known.has(n.dataset.id))n.remove()});
+  const empty=w.querySelector('.empty'); if(empty) empty.remove();
+  if(!list.length){w.insertAdjacentHTML('beforeend',`<div class="empty"><div>아직 비어 있어요.<br><b>첫 한마디</b>를 남겨주세요.</div></div>`);return}
+  const map=new Map([...w.querySelectorAll('[data-id]')].map(n=>[n.dataset.id,n]));
+  list.forEach((p,i)=>{let n=map.get(p.id); if(!n){n=el(p);map.set(p.id,n);} const cur=w.querySelectorAll('[data-id]')[i]; if(cur!==n) w.insertBefore(n,cur||null);});
+  const items=list.map(p=>map.get(p.id));
+  items.forEach(n=>{n.style.display='';n.style.gridColumn='';n.style.gridRow='';n.classList.remove('big')});
+  if(layout==='grid'){ items.forEach((n,i)=>{if(i>=15)n.style.display='none'}); }
+  else if(layout==='feat'){ items.forEach((n,i)=>{ if(i>=10)n.style.display='none'; else if(i===0){n.classList.add('big');n.style.gridRow='1 / span 3';} }); }
+  else if(layout==='bento'){ let area=0; items.forEach((n,i)=>{ const [c,r]=span(list[i].id); if(area+c*r>24){n.style.display='none';return} area+=c*r; n.style.gridColumn=`span ${c}`; n.style.gridRow=`span ${r}`; if(c*r>=4)n.classList.add('big'); }); }
+  else { const H=w.clientHeight; for(let i=items.length-1;i>=0;i--){ if(items[i].offsetTop+items[i].offsetHeight>H+4) items[i].style.display='none'; } }
+  fit(items);
+}
+function fit(items){ // grid layouts: clamp message lines to what really fits
+  items.forEach(n=>{ const m=n.querySelector('.msg'); if(!m)return; m.style.maxHeight='';m.style.flex='';
+    if(layout==='flow'||n.style.display==='none'){m.style.webkitLineClamp='';return}
+    const lh=parseFloat(getComputedStyle(m).lineHeight)||20; const k=Math.max(1,Math.floor(m.clientHeight/lh+0.02)); m.style.webkitLineClamp=k; m.style.maxHeight=(k*lh)+'px'; m.style.flex='0 0 auto'; });
+}
+let tt; function setLayout(k){ if(!LAYOUTS[k])return; layout=k; try{localStorage.setItem('gb_layout',k)}catch(e){} render(); const t=$('toast'); t.textContent='layout '+LAYOUTS[k]; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),1400); }
+document.addEventListener('keydown',e=>{ const k={'1':'flow','2':'grid','3':'bento','4':'feat'}[e.key]; if(k) setLayout(k); });
+async function spot(){
+  if(showing||!queue.length)return; showing=true; const p=queue.shift();
+  const C={yellow:['#FFD600','#0f0f02','#0f0f02'],black:['#0f0f02','#0f0f02','#FFD600'],white:['#ffffff','#0f0f02','#0f0f02'],gray:['#e9e8e0','#0f0f02','#0f0f02']}[p.color]||['#FFD600','#0f0f02','#0f0f02'];
+  $('spotnote').innerHTML=`<div class="cloud" style="color:${C[2]}"><div class="msg">${esc(p.message)}</div><div class="by">- ${esc(p.nickname)}</div></div>`;
+  $('spot').classList.add('on'); scallop($('spotnote').firstChild,{fill:C[0],stroke:C[1],b:Math.round(innerHeight*0.022)});
+  await new Promise(r=>setTimeout(r,4500));
+  $('spotnote').firstChild.classList.add('out'); await new Promise(r=>setTimeout(r,600));
+  $('spot').classList.remove('on'); known.set(p.id,p); render(); showing=false; setTimeout(spot,300);
+}
+let busy=false;
+async function load(){
+  if(busy)return; busy=true;
+  const {data,error}=await sb.from('posts').select('id,nickname,message,keyword,color,created_at').order('created_at',{ascending:false}).limit(300);
+  busy=false; if(error||!data)return;
+  const ids=new Set(data.map(d=>d.id));
+  for(const id of [...known.keys()]) if(!ids.has(id)) known.delete(id);
+  const fresh=data.filter(d=>!known.has(d.id)&&!queue.some(q=>q.id===d.id)).reverse();
+  if(first){data.forEach(d=>known.set(d.id,d));first=false;}
+  else fresh.forEach(d=>queue.push(d));
+  render(); spot();
+}
+load(); setInterval(load,8000);
+sb.channel('posts-wall').on('postgres_changes',{event:'*',schema:'public',table:'posts'},()=>load()).subscribe();
+window.addEventListener('resize',render);
+</script></body></html>

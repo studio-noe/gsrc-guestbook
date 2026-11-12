@@ -3,7 +3,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>GSRC81 송년회 방명록</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@300;400;600&family=Gaegu&family=Yeon+Sung&family=Do+Hyeon&family=Jua&family=Black+Han+Sans&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@300;400;600&family=Orbit&family=Kirang+Haerang&family=Do+Hyeon&family=Jua&family=Black+Han+Sans&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
 html,body{height:100%;overflow:hidden}
@@ -67,8 +67,8 @@ button.go:active{transform:scale(.98)}
   <div class="sr"><b>글씨</b>
     <div class="fonts" id="fts">
       <div class="ft f-serif sel" data-f="serif">기본</div>
-      <div class="ft f-pen" data-f="pen">펜</div>
-      <div class="ft f-brush" data-f="brush">붓</div>
+      <div class="ft f-orbit" data-f="orbit">궤도</div>
+      <div class="ft f-kirang" data-f="kirang">기랑</div>
       <div class="ft f-dohyeon" data-f="dohyeon">도현</div>
       <div class="ft f-jua" data-f="jua">주아</div>
       <div class="ft f-black" data-f="black">검은</div>
@@ -109,7 +109,7 @@ $('sws').addEventListener('click',e=>{const s=e.target.closest('.sw'); if(!s) re
   document.querySelectorAll('.sw').forEach(x=>x.classList.remove('sel')); s.classList.add('sel'); color=s.dataset.c; paint();});
 
 let font='serif';
-const FONTS=['serif','pen','brush','dohyeon','jua','black'];
+const FONTS=['serif','orbit','kirang','dohyeon','jua','black'];
 function setFont(f){ if(!FONTS.includes(f)) return;
   // classList, not className: scallop() keeps its own class on the hero
   $('hero').classList.replace('f-'+font,'f-'+f); font=f;

@@ -3,7 +3,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>GSRC81 송년회 방명록</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@300;400;600&family=Nanum+Pen+Script&family=Nanum+Brush+Script&family=Do+Hyeon&family=Jua&family=Black+Han+Sans&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
 html,body{height:100%;overflow:hidden}
@@ -13,7 +13,7 @@ body{display:flex;flex-direction:column;height:100dvh;padding:max(12px,env(safe-
 .bar span{margin-left:auto;font-size:14px;color:var(--ink2)}
 form{flex:1;display:flex;flex-direction:column;min-height:0}
 .hero{flex:1;min-height:150px;margin:12px 0 14px;padding:36px 30px 34px;display:flex;flex-direction:column;--fg:var(--ink)}
-.hero textarea{flex:1;min-height:0;width:100%;resize:none;background:transparent;border:0;outline:0;color:var(--fg);font-family:var(--serif);font-weight:300;font-size:25px;line-height:1.38;letter-spacing:-.04em;padding:0}
+.hero textarea{flex:1;min-height:0;width:100%;resize:none;background:transparent;border:0;outline:0;color:var(--fg);font-family:var(--face,var(--serif));font-weight:300;font-size:calc(25px*var(--fsc,1));line-height:var(--flh,1.38);letter-spacing:-.04em;padding:0}
 .hero textarea::placeholder{color:var(--fg);opacity:.5}
 .hero .cnt{flex:none;text-align:right;font-size:12px;color:var(--fg);opacity:.6;margin-top:4px}
 .row{display:flex;gap:12px;flex:none}
@@ -28,6 +28,13 @@ input:focus{border-color:var(--ink)}
 .swatches{display:flex;gap:14px}
 .sw{width:32px;height:32px;border-radius:50%;cursor:pointer;box-shadow:0 0 0 1px var(--ink) inset;position:relative}
 .sw.sel::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--ink)}
+.fonts{display:flex;align-items:center;gap:7px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.fonts::-webkit-scrollbar{display:none}
+/* chips are a fixed height but render their own face at its true size, so the sample is honest */
+.ft{flex:none;display:flex;align-items:center;height:34px;padding:0 13px;border:1px solid var(--line);
+    border-radius:99px;cursor:pointer;color:var(--ink);white-space:nowrap;
+    font-family:var(--face,var(--serif));font-size:calc(15px*var(--fsc,1))}
+.ft.sel{border-color:var(--ink);background:var(--ink);color:#fff}
 button.go{display:block;width:100%;flex:none;background:var(--y);color:var(--ink);border:1px solid var(--ink);border-radius:99px;font-family:var(--sans);font-weight:500;font-size:20px;letter-spacing:-.04em;padding:15px;cursor:pointer}
 button.go:disabled{opacity:.35}
 button.go:active{transform:scale(.98)}
@@ -42,7 +49,7 @@ button.go:active{transform:scale(.98)}
 <div class="bar"><img class="logo" src="logo-dark.svg" alt="GSRC81"><span id="date"></span></div>
 
 <form id="form" autocomplete="off">
-  <div class="hero" id="hero">
+  <div class="hero f-serif" id="hero">
     <textarea id="msg" maxlength="200" placeholder="올해 같이 달린 이야기,&#10;한마디로 남겨주세요." required></textarea>
     <div class="cnt"><span id="n">0</span> / 200</div>
   </div>
@@ -55,6 +62,16 @@ button.go:active{transform:scale(.98)}
       <div class="sw c-black" data-c="black"></div>
       <div class="sw c-white" data-c="white"></div>
       <div class="sw c-gray" data-c="gray"></div>
+    </div>
+  </div>
+  <div class="sr"><b>글씨</b>
+    <div class="fonts" id="fts">
+      <div class="ft f-serif sel" data-f="serif">기본</div>
+      <div class="ft f-pen" data-f="pen">펜글씨</div>
+      <div class="ft f-brush" data-f="brush">붓글씨</div>
+      <div class="ft f-dohyeon" data-f="dohyeon">도현</div>
+      <div class="ft f-jua" data-f="jua">주아</div>
+      <div class="ft f-black" data-f="black">검은고딕</div>
     </div>
   </div>
   <button class="go" id="go" type="submit">붙이기 ↗</button>
@@ -91,6 +108,17 @@ $('msg').addEventListener('input',()=>{$('n').textContent=$('msg').value.length}
 $('sws').addEventListener('click',e=>{const s=e.target.closest('.sw'); if(!s) return;
   document.querySelectorAll('.sw').forEach(x=>x.classList.remove('sel')); s.classList.add('sel'); color=s.dataset.c; paint();});
 
+let font='serif';
+const FONTS=['serif','pen','brush','dohyeon','jua','black'];
+function setFont(f){ if(!FONTS.includes(f)) return;
+  // classList, not className: scallop() keeps its own class on the hero
+  $('hero').classList.replace('f-'+font,'f-'+f); font=f;
+  document.querySelectorAll('.ft').forEach(x=>x.classList.toggle('sel',x.dataset.f===f));
+  try{localStorage.setItem('gb_font',f)}catch(e){}
+}
+$('fts').addEventListener('click',e=>{const t=e.target.closest('.ft'); if(t) setFont(t.dataset.f)});
+try{const f=localStorage.getItem('gb_font'); if(f) setFont(f);}catch(e){}
+
 async function checkLock(){
   const {data}=await sb.from('settings').select('locked').eq('id',1).single();
   if(data&&data.locked){$('form').classList.add('hidden');$('done').classList.add('hidden');$('locked').classList.remove('hidden');}
@@ -99,7 +127,7 @@ checkLock();
 
 $('form').addEventListener('submit',async e=>{
   e.preventDefault(); $('err').textContent=''; $('go').disabled=true;
-  const {error}=await sb.rpc('submit_post',{p_nickname:$('nick').value,p_message:$('msg').value,p_keyword:'',p_color:color,p_device:dev});
+  const {error}=await sb.rpc('submit_post',{p_nickname:$('nick').value,p_message:$('msg').value,p_keyword:'',p_color:color,p_device:dev,p_font:font});
   if(error){
     const m=error.message||'';
     $('err').textContent=m.includes('locked')?'작성이 마감됐어요.':m.includes('too_many')?'너무 빨라요. 잠시 후 다시 시도해주세요.':'등록에 실패했어요. 다시 시도해주세요.';

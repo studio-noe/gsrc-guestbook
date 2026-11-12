@@ -3,7 +3,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>방명록 관리자</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@300;400;600&family=Nanum+Pen+Script&family=Nanum+Brush+Script&family=Do+Hyeon&family=Jua&family=Black+Han+Sans&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
 body{padding:20px;max-width:720px;margin:0 auto}
@@ -17,7 +17,7 @@ button.del{border-color:#d6382a;color:#d6382a}
 .row{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)}
 .row.h{opacity:.45}
 .row .b{flex:1;min-width:0}
-.row .m{font-family:var(--serif);font-size:17px;line-height:1.5;letter-spacing:-.03em;white-space:pre-wrap;overflow-wrap:anywhere}
+.row .m{font-family:var(--face,var(--serif));font-size:calc(17px*var(--fsc,1));line-height:var(--flh,1.5);letter-spacing:-.03em;white-space:pre-wrap;overflow-wrap:anywhere}
 .row .i{font-size:12px;color:var(--g);margin-top:4px}
 .row .a{display:flex;flex-direction:column;gap:6px}
 .dot{width:14px;height:14px;border-radius:50%;margin-top:5px;flex:none;border:1px solid var(--ink)}
@@ -47,7 +47,7 @@ async function load(){
 function draw(){
   $('st').textContent=`전체 ${rows.length}개 / 숨김 ${rows.filter(r=>r.hidden).length}개 / 작성 ${locked?'마감':'열림'}`;
   $('lock').textContent=locked?'작성 다시 열기':'작성 마감하기';
-  $('list').innerHTML=rows.map(r=>`<div class="row ${r.hidden?'h':''}"><div class="dot" style="background:${COL[r.color]||'#fff'}"></div><div class="b"><div class="m">${esc(r.message)}</div><div class="i">${esc(r.nickname)} / ${new Date(r.created_at).toLocaleString('ko-KR')}</div></div><div class="a"><button data-a="hide" data-id="${r.id}">${r.hidden?'보이기':'숨기기'}</button><button class="del" data-a="del" data-id="${r.id}">삭제</button></div></div>`).join('')||'<p style="color:var(--g);padding:20px 0">아직 글이 없어요</p>';
+  $('list').innerHTML=rows.map(r=>`<div class="row f-${r.font||'serif'} ${r.hidden?'h':''}"><div class="dot" style="background:${COL[r.color]||'#fff'}"></div><div class="b"><div class="m">${esc(r.message)}</div><div class="i">${esc(r.nickname)} / ${new Date(r.created_at).toLocaleString('ko-KR')}</div></div><div class="a"><button data-a="hide" data-id="${r.id}">${r.hidden?'보이기':'숨기기'}</button><button class="del" data-a="del" data-id="${r.id}">삭제</button></div></div>`).join('')||'<p style="color:var(--g);padding:20px 0">아직 글이 없어요</p>';
 }
 $('enter').onclick=async()=>{pass=$('pw').value; if(await load()){$('login').classList.add('hidden');$('main').classList.remove('hidden')}else{$('err').textContent='비밀번호가 맞지 않아요'}};
 $('pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('enter').click()});

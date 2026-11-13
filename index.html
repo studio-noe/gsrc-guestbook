@@ -75,12 +75,9 @@ a.ghost{text-decoration:none;display:inline-flex;align-items:center}
       <div class="ft f-serif sel" data-f="serif">기본</div>
       <div class="ft f-orbit" data-f="orbit">궤도</div>
       <div class="ft f-black" data-f="black">검은</div>
-      <div class="ft f-joseon" data-f="joseon">궁서</div>
       <div class="ft f-cucumber" data-f="cucumber">오이</div>
       <div class="ft f-dos" data-f="dos">도스</div>
       <div class="ft f-gunham" data-f="gunham">군함</div>
-      <div class="ft f-jaram" data-f="jaram">자람</div>
-      <div class="ft f-minguk" data-f="minguk">민국</div>
     </div>
   </div>
   <button class="go" id="go" type="submit">붙이기 ↗</button>
@@ -119,7 +116,7 @@ $('sws').addEventListener('click',e=>{const s=e.target.closest('.sw'); if(!s) re
   document.querySelectorAll('.sw').forEach(x=>x.classList.remove('sel')); s.classList.add('sel'); color=s.dataset.c; paint();});
 
 let font='serif';
-const FONTS=['serif','orbit','black','joseon','cucumber','dos','gunham','jaram','minguk'];
+const FONTS=['serif','orbit','black','cucumber','dos','gunham'];
 function setFont(f){ if(!FONTS.includes(f)) return;
   // classList, not className: scallop() keeps its own class on the hero
   $('hero').classList.replace('f-'+font,'f-'+f); font=f;

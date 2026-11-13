@@ -17,22 +17,16 @@ html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-
 .note{border-radius:6px;padding:16px 16px 14px;position:relative;box-shadow:inset 0 0 0 1px var(--ol)}
 .note .kw{display:inline-block;font-size:.7em;font-weight:500;border:1px solid currentColor;border-radius:99px;padding:1px 10px;margin-bottom:10px;letter-spacing:0}
 .note .msg{font-family:var(--face,var(--serif));font-weight:400;font-size:calc(1.05em*var(--fsc,1));line-height:var(--flh,1.5);letter-spacing:-.03em;word-break:keep-all;overflow-wrap:anywhere;white-space:pre-wrap}
-/* 눈누 글씨체. jsdelivr 에서 바로 받아 쓴다. 원본 그대로 쓰는 조건이 붙은 서체가 있어 잘라내지 않았다 */
-@font-face{font-family:'JoseonPalace';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGs.woff') format('woff');font-weight:400;font-display:swap}
+/* 눈누 글씨체. jsdelivr 에서 바로 받아 쓴다. 한글 전체가 든 통짜 파일이라 가벼운 것만 골랐다 */
 @font-face{font-family:'CucumberSalad';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2210-EF@1.0/EF_cucumbersalad.woff2') format('woff2');font-weight:400;font-display:swap}
 @font-face{font-family:'DosStory';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/DOSIyagiMedium.woff2') format('woff2');font-weight:400;font-display:swap}
 @font-face{font-family:'GunhamiTalks';src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/2607131613@gfcgunhamitalks/gfcgunhamitalks/GFCGunhamiTalks.woff2') format('woff2');font-weight:400;font-display:swap}
-@font-face{font-family:'IncheonJaram';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/iceJaram-Rg.woff2') format('woff2');font-weight:400;font-display:swap}
-@font-face{font-family:'ChildfundMinguk';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaMinGuk.woff2') format('woff2');font-weight:400;font-display:swap}
-/* 글씨체 9종. --fsc 와 --flh 는 서체마다 다른 체감 크기를 맞추는 보정값 */
+/* 글씨체 6종. --fsc 와 --flh 는 서체마다 다른 체감 크기를 맞추는 보정값 */
 .f-serif   {--face:var(--serif);--fsc:1;--flh:1.5}
 .f-orbit   {--face:'Orbit',var(--sans);--fsc:.96;--flh:1.5}
 .f-black   {--face:'Black Han Sans',var(--sans);--fsc:.98;--flh:1.4}
-.f-joseon  {--face:'JoseonPalace',var(--serif);--fsc:1.03;--flh:1.5}
 .f-cucumber{--face:'CucumberSalad',var(--sans);--fsc:1.22;--flh:1.42}
 .f-dos     {--face:'DosStory',var(--sans);--fsc:.97;--flh:1.5}
 .f-gunham  {--face:'GunhamiTalks',var(--sans);--fsc:1.1;--flh:1.45}
-.f-jaram   {--face:'IncheonJaram',var(--sans);--fsc:1.27;--flh:1.4}
-.f-minguk  {--face:'ChildfundMinguk',var(--sans);--fsc:1;--flh:1.6}
 .note .by{margin-top:12px;font-size:.78em;font-weight:500;opacity:.85}
 .note.cloudy{background:transparent;box-shadow:none;border-radius:0;padding:28px 26px 24px}

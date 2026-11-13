@@ -12,7 +12,7 @@ body{display:grid;grid-template-rows:auto 1fr}
 .top .nm{font-size:4.6vh;font-weight:500;letter-spacing:-.05em;line-height:1}
 .top .sub{color:var(--ink2);font-size:2.1vh;margin-left:1.2vw;letter-spacing:-.01em}
 .top .sp{flex:1}
-.top .mid{font-family:var(--serif);font-weight:300;letter-spacing:-.04em;font-size:3.6vh;text-align:right;line-height:1.25}
+.top .mid{text-decoration:none;color:inherit;font-family:var(--serif);font-weight:300;letter-spacing:-.04em;font-size:3.6vh;text-align:right;line-height:1.25}
 .top .mid b{font-weight:300;background:linear-gradient(transparent 62%,var(--y) 62%)}
 .qr{display:flex;align-items:center;gap:1.4vw;margin-left:2.4vw}
 .cnt{font-size:1.9vh;color:var(--g);text-align:right;margin-top:.6vh}
@@ -61,7 +61,7 @@ body{display:grid;grid-template-rows:auto 1fr}
 <div class="top">
   <img class="logo" src="logo-dark.svg" alt="GSRC81"><div class="sub" id="date"></div>
   <div class="sp"></div>
-  <div class="mid">QR 찍고<br><b>한마디 남기기 ↗</b></div>
+  <a class="mid" href="./">QR 찍고<br><b>한마디 남기기 ↗</b></a>
   <div class="qr"><div><div id="qrbox"></div><div class="cnt" id="cnt"></div></div></div>
 </div>
 <div id="wall" class="L-flow"></div>

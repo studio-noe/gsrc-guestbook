@@ -2,7 +2,8 @@
 <html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>GSRC81 방명록 월</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@300;400;600&family=Orbit&family=Kirang+Haerang&family=Do+Hyeon&family=Jua&family=Black+Han+Sans&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@300;400;600&family=Orbit&family=Black+Han+Sans&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
 html,body{height:100%;overflow:hidden}
@@ -25,7 +26,9 @@ body{display:grid;grid-template-rows:auto 1fr}
 /* layout 1: flow (masonry columns, card height follows the message, slight tilt) */
 #wall.L-flow{column-count:5;column-gap:1.6vw;column-fill:auto}
 #wall.L-flow .note{width:auto;margin:0 0 2.2vh;break-inside:avoid}
-#wall.L-flow .note .msg{display:block;overflow:visible} /* no line clamp: the card grows to the whole message */
+/* the card still grows with the message, but never past a column: an item taller than the column
+   breaks across columns and the scallop svg only paints one fragment */
+#wall.L-flow{--lc:10}
 /* layout 2: grid (even 5x3) */
 #wall.L-grid,#wall.L-bento,#wall.L-feat{display:grid;gap:2.2vh 1.4vw;--rk:.25}
 #wall.L-grid{grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(3,1fr);--lc:5}
@@ -92,7 +95,7 @@ if(!LAYOUTS[layout]) layout='flow';
 const hash=id=>{let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)};
 const span=id=>{const h=hash(id)%100;return h<12?[2,2]:h<24?[2,1]:h<34?[1,2]:[1,1]};
 function render(){
-  const w=$('wall'); w.className='L-'+layout;
+  const w=$('wall'); w.className='L-'+layout; w.style.columnCount='';
   const list=[...known.values()].sort((a,b)=>b.created_at.localeCompare(a.created_at));
   $('cnt').textContent=list.length+'개의 한마디';
   w.querySelectorAll('[data-id]').forEach(n=>{if(!known.has(n.dataset.id))n.remove()});
@@ -106,7 +109,9 @@ function render(){
   else if(layout==='feat'){ items.forEach((n,i)=>{ if(i>=10)n.style.display='none'; else if(i===0){n.classList.add('big');n.style.gridRow='1 / span 3';} }); }
   else if(layout==='bento'){ let area=0; items.forEach((n,i)=>{ const [c,r]=span(list[i].id); if(area+c*r>24){n.style.display='none';return} area+=c*r; n.style.gridColumn=`span ${c}`; n.style.gridRow=`span ${r}`; if(c*r>=4)n.classList.add('big'); }); }
   // masonry: cards flow down each column, so anything past the last column is off screen. keep the newest prefix that fits.
-  else { const lim=w.clientWidth-parseFloat(getComputedStyle(w).paddingRight)+2;
+  else { // few posts would leave half the screen bare, so use fewer, wider columns until it fills up
+    w.style.columnCount=Math.min(5,Math.max(3,Math.ceil(items.length/3)));
+    const lim=w.clientWidth-parseFloat(getComputedStyle(w).paddingRight)+2;
     const cut=items.findIndex(n=>n.offsetLeft+n.offsetWidth>lim);
     if(cut>=0) for(let i=cut;i<items.length;i++) items[i].style.display='none'; }
   fit(items);

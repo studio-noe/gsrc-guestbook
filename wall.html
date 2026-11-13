@@ -11,16 +11,17 @@ body{display:grid;grid-template-rows:auto 1fr}
 .top{display:flex;align-items:center;gap:1.6vw;padding:2.2vh 3vw 2vh;border-bottom:1px solid var(--ink)}
 .top .logo{height:6.4vh;width:auto}
 .top .nm{font-size:4.6vh;font-weight:500;letter-spacing:-.05em;line-height:1}
-.top .sub{color:var(--ink2);font-size:2.1vh;margin-left:1.2vw;letter-spacing:-.01em}
+.top .sub{color:var(--ink2);font-size:2.1vh;margin-left:1.2vw;letter-spacing:-.01em;min-width:0}
 .top .sp{flex:1}
-.top .mid{text-decoration:none;color:inherit;font-family:var(--serif);font-weight:300;letter-spacing:-.04em;font-size:3.6vh;text-align:right;line-height:1.25}
+.top .mid{flex:none;white-space:nowrap;text-decoration:none;color:inherit;font-family:var(--serif);font-weight:300;letter-spacing:-.04em;font-size:3.6vh;text-align:right;line-height:1.25}
+@media(max-width:900px){.top .mid{display:none}}  /* 좁은 창에서는 QR 만 남긴다 */
 .top .mid b{font-weight:300;background:linear-gradient(transparent 62%,var(--y) 62%)}
 .qr{display:flex;align-items:center;gap:1.4vw;margin-left:2.4vw}
 .cnt{font-size:1.9vh;color:var(--g);text-align:right;margin-top:.6vh}
 #qrbox{background:#fff;padding:.8vh;border-radius:10px;border:1px solid var(--ink);width:11vh;height:11vh}
 #qrbox img,#qrbox canvas{width:100%!important;height:100%!important}
 #wall{position:relative;padding:2.6vh 2.4vw;overflow:hidden;min-height:0}
-#wall .note{font-size:2vh;transform:rotate(calc(var(--r)*var(--rk,1)));animation:pop .6s cubic-bezier(.2,1.4,.4,1) both}
+#wall .note{font-size:calc(2vh*var(--sc,1));transform:rotate(calc(var(--r)*var(--rk,1)));animation:pop .6s cubic-bezier(.2,1.4,.4,1) both}
 @keyframes pop{from{opacity:0;transform:scale(.4) rotate(0)}to{opacity:1;transform:rotate(calc(var(--r)*var(--rk,1)))}}
 #wall .note .msg{display:-webkit-box;-webkit-line-clamp:var(--lc,6);-webkit-box-orient:vertical;overflow:hidden}
 /* layout 1: flow (masonry columns, card height follows the message, slight tilt) */
@@ -126,25 +127,33 @@ function flowPage(w,items,adv){
   const gx=innerWidth*.016, gy=innerHeight*.022;
   // 카드가 조금 기울어 있어서 아래로 삐져나오는 만큼 뺀다
   const colH=w.clientHeight-padT-parseFloat(cs.paddingBottom)-14;
-  // 칸 수는 화면 너비가 정한다. 글이 몇 개 없으면 넓게 쓴다
-  const nc=Math.max(2,Math.min(5,Math.round(availW/330),Math.max(2,Math.ceil(cand.length/3))));
+  // 칸 수는 화면 너비만 보고 정한다. 글 개수로 정하면 넓은 화면에서 카드가 한없이 길어진다
+  const nc=Math.max(2,Math.min(6,Math.round(availW/340)));
   const cw=(availW-gx*(nc-1))/nc;
-  items.forEach(n=>{n.style.display='none';n.style.width=cw+'px'});
-  const tops=new Array(nc).fill(0), left=[], put=[];
-  for(const id of cand){ const n=byId.get(id);
-    n.style.display='';
-    // 어느 칸에도 안 들어가는 긴 글은 글자를 줄여서 넣는다. 잘라내지 않는다
-    for(let k=0,fs=parseFloat(getComputedStyle(n).fontSize); k<16&&n.offsetHeight>colH; k++){ fs*=.92; n.style.fontSize=fs+'px'; }
-    const h=n.offsetHeight;
-    let c=0; for(let j=1;j<nc;j++) if(tops[j]<tops[c]) c=j;   // 제일 낮은 칸에 쌓는다
-    if(tops[c]+h>colH){ n.style.display='none'; left.push(id); continue; }
-    n.style.left=(padL+c*(cw+gx))+'px'; n.style.top=(padT+tops[c])+'px';
-    tops[c]+=h+gy; put.push(id);
-  }
+  const pack=sc=>{
+    w.style.setProperty('--sc',sc);
+    items.forEach(n=>{n.style.display='none';n.style.width=cw+'px';n.style.fontSize=''});
+    const tops=new Array(nc).fill(0), left=[], put=[];
+    for(const id of cand){ const n=byId.get(id);
+      n.style.display='';
+      // 어느 칸에도 안 들어가는 긴 글은 그 카드만 글자를 줄인다. 잘라내지 않는다
+      for(let k=0,fs=parseFloat(getComputedStyle(n).fontSize); k<16&&n.offsetHeight>colH; k++){ fs*=.92; n.style.fontSize=fs+'px'; }
+      const h=n.offsetHeight;
+      let c=0; for(let j=1;j<nc;j++) if(tops[j]<tops[c]) c=j;   // 제일 낮은 칸에 쌓는다
+      if(tops[c]+h>colH){ n.style.display='none'; left.push(id); continue; }
+      n.style.left=(padL+c*(cw+gx))+'px'; n.style.top=(padT+tops[c])+'px';
+      tops[c]+=h+gy; put.push(id);
+    }
+    return {sc,put,left,fill:Math.max(...tops)/colH};
+  };
+  let r=pack(1);
+  // 글이 몇 개 없어 화면이 휑하면 다 들어가는 선에서 카드를 키운다
+  if(!r.left.length&&r.fill<.78) for(const sc of [1.25,1.55,1.9,2.3]){
+    const t=pack(sc); if(t.left.length){ r=pack(r.sc); break; } r=t; if(t.fill>=.78) break; }
   // 아무것도 못 넣었으면 화면이 빈다. 그럴 땐 맨 앞 한 장이라도 올린다
-  if(!put.length&&cand.length){ const n=byId.get(cand[0]); n.style.display='';
-    n.style.left=padL+'px'; n.style.top=padT+'px'; put.push(left.shift()); }
-  cur=put; cycle=left;
+  if(!r.put.length&&cand.length){ const n=byId.get(cand[0]); n.style.display='';
+    n.style.left=padL+'px'; n.style.top=padT+'px'; r.put.push(r.left.shift()); }
+  cur=r.put; cycle=r.left;
 }
 // 15초마다 다음 장. 스포트라이트 중에는 넘기지 않는다
 setInterval(()=>{ if(layout==='flow'&&!showing&&cycle.length) render(true); },15000);
